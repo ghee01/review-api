@@ -1,0 +1,18 @@
+# Python이 실행 중 생성하는 캐시/바이트코드는 이미지에 포함할 필요 X
+__pycache__
+*.pyc
+
+# 버전 관리, CI 설정은 컨테이너 런타임에 필요 X
+.git
+.github
+.dockerignore
+Dockerfile
+
+# 설명 문서는 실행에 필요 X
+README.md
+
+# Gemini API key 같은 비밀값이 이미지에 복사되지 않도록 제외
+.env
+
+# 가상환경
+.venv
