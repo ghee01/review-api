@@ -63,4 +63,17 @@ def analyze_and_save(request: ReviewRequest, db: Session=Depends(get_db)):
         raise HTTPException(status_code=500, detail=str(e))
 
     # 2) DB 저장. 저장 실패는 분석 실패와 구분해서 알려 준다.
-    
+    row = Review(
+        review_text=request.review_text,
+        llm_model=app.state.analyzer.model,
+        **analysis.model_dump(),
+    )
+    try:
+        db.add(row)
+        db.commit()
+        db.refresh(row)
+    except SQLAlchemyError as e:
+        db.rollback()
+        logger.error('DB 저장 실패: %s', e)
+        raise HTTPException(status_code=503, detail='분석은 성공했지만 DB 저장에 실패했습니다.')
+    return row
