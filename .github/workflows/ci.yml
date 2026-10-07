@@ -36,7 +36,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Lightsail 서버 접속 후 배포
-        uses: appleboy/ssh-actions@v1
+        uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.LIGHTSAIL_HOST }}
           username: ${{ secrets.LIGHTSAIL_USERNAME }}
