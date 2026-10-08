@@ -1,6 +1,7 @@
 # 이 파일의 역할: main에 push 하면 1)테스트 2)통과하면 AWS lightsail에 docker compose(api+db)로 자동 배포
 # 필요한 시크릿: LIGHTSAIL_HOST, LIGHTSAIL_USERNAME, LIGHTSAIL_SSH_KEY
 # 서버에 미리 해 둘 것: Docker 설치, 저장소 clone, 서버의 .env에 GEMINI_API_KEY와 POSTGRES_* 작성
+
 name: CI-CD
 
 # 언제 실행할까? main 브랜치에 push 할 때, Actions 탭의 "Run workflow" 버튼 실행 할 때
