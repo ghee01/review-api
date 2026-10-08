@@ -77,3 +77,32 @@ def analyze_and_save(request: ReviewRequest, db: Session=Depends(get_db)):
         logger.error('DB 저장 실패: %s', e)
         raise HTTPException(status_code=503, detail='분석은 성공했지만 DB 저장에 실패했습니다.')
     return row
+
+@app.get('/reviews', response_model=list[ReviewRecord])
+def list_reviews(
+    sentiment: str | None = None,
+    category: str | None = None,
+    limit: int = Query(20, ge=1, le=100),
+    offset: int = Query(0, get=0),
+    db: Session = Depends(get_db),
+):
+    stmt = select(Review).order_by(Review.id.desc()).limit(limit).offset(offset)
+    if sentiment:
+        stmt = stmt.where(Review.sentiment == sentiment)
+    if category:
+        stmt = stmt.where(Review.category == category)
+    return db.scalars(stmt).all()
+
+@app.get('/reviews/stats', response_model=StatsResponse)
+def review_stats(db: Session=Depends(get_db)):
+    total = db.scalar(select(func.count()).select_from(Review)) or 0
+    by_sentiment = dict(db.execute(select(Review.sentiment, func.count()).group_by(Review.sentiment)).all())
+    by_category = dict(db.execute(select(Review.category, func.count()).group_by(Review.category)).all())
+    return StatsResponse(total=total, by_sentiment=by_sentiment, by_category=by_category)
+
+@app.get('/reviews/{review_id}', response_model=ReviewRecord)
+def get_review(review_id: int, db: Session=Depends(get_db)):
+    row = db.get(Review, review_id)
+    if row is None:
+        raise HTTPException(status_code=404, detail='해당 리뷰가 없습니다.')
+    return row
